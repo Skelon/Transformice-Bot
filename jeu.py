@@ -270,8 +270,10 @@ class BulleSocket(threading.Thread):
 
 class DummyThread(threading.Thread):
     def __init__(self):
-        threading.Thread.__init__(self, target = (self.recevoir), args = (self))
+        threading.Thread.__init__(self, target = (self.dummy), args = (self))
+        
     def run(self):
         while self.éxecuté == (bool(1)):
             time.sleep(15)
+            self.dummy(self) 
             
