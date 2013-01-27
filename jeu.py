@@ -3,6 +3,7 @@ import hashlib
 import ssl
 import struct
 import threading
+import time
 import urllib.request as _requêteur
 
 try:
@@ -32,6 +33,8 @@ class PrincipalSocket(threading.Thread):
         self.MDT = [(int())] * (int(10))
         self.connecté = (bool())
         self.principal = (ssl.SSLSocket())
+        self.analyseur = (RecevoirThread.__init__(self))
+        self.survivre = (DummyThread.__init__(self))
 
         try:
             self.principal.bind(('localhost', (int(port))))
@@ -66,6 +69,8 @@ class PrincipalSocket(threading.Thread):
         string = ((struct.pack('>H', ((len('A=t&SA=t&SV=t&EV=t&MP3=t&AE=t&VE=t&ACC=f&PR=t&SP=f&SB=f&DEB=f&V=WIN 10,1,85,3&M=Adobe Windows&R=1366×768&COL=color&AR=1.0&OS=Windows7&ARCH=x86&L=fr&IME=t&PR32=t&PR64=f&PT=StandAlone&AVD=f&LFD=f&WD=f&TLS=t&ML=5.1&DP=72')) + 2))) + ('A=t&SA=t&SV=t&EV=t&MP3=t&AE=t&VE=t&ACC=f&PR=t&SP=f&SB=f&DEB=f&V=WIN 10,1,85,3&M=Adobe Windows&R=1366×768&COL=color&AR=1.0&OS=Windows7&ARCH=x86&L=fr&IME=t&PR32=t&PR64=f&PT=StandAlone&AVD=f&LFD=f&WD=f&TLS=t&ML=5.1&DP=72'.encode('utf-8')))
         paquet = (CCC + version + clé + chargeur + client + utilisateur + empty + fonte + string)
         self.envoyer(self, paquet, (bool()))
+        self.analyseur.start()
+        self.survivre.start()
 
         self.prendre_ccc(self, C = '28')
         langage = ((struct.pack('>H', ((len('fr')) + 2))) + ('fr'.encode('utf-8')))
@@ -110,6 +115,7 @@ class PrincipalSocket(threading.Thread):
             CCC = ((struct.pack('>H', ((len((struct.pack('>2B', (int(26)), (int(2)))))) + 2))) + (struct.pack('>2B', (int(26)), (int(2)))))
             paquet = (CCC)
             self.envoyer(self, paquet, (bool(1)))
+            time.sleep(15)
 
     def communauté(self, communauté):
         '''0 = en, 1 = fr, 2 = ru, 3 = br, 4 = es, 5 = cn, 6 = tr, 7 = vk, 8 = pl, 9 = hu, 10 = nl, 11 = ro, 12 = id'''
@@ -175,14 +181,20 @@ class PrincipalSocket(threading.Thread):
 
     def deconnecte(self, cible):
        print("Deconnexion...")
+       self.analysuer = None
+       self.survivre = None
        self.principal.close()
        try:
+           cible.analyseur = None
+           cible.survivre = None
            cible.bulle.close()
        except Exception:
            pass
 
-    def reconnecte(self, port):
+    def reconnecte(self, cible, port):
         self.deconnecte(self)
+        self.analyseur = (RecevoirThread.__init__(self))
+        self.survivre = (DummyThread.__init__(self))
         self.connecte(self, port)
 
 class BulleSocket(threading.Thread):
@@ -192,7 +204,8 @@ class BulleSocket(threading.Thread):
         self.CMDTEC = (int())
         self.MDT = [(int())] * (int(10))
         self.connecté = (bool())
-        self.analyseur = (BulleThread(BulleSocket))
+        self.analyseur = (RecevoirThread.__init__(self))
+        self.survivre = (DummyThread.__init__(self))
         self.bulle = (ssl.SSLSocket())
 
         self.id_souris = (int())
@@ -200,13 +213,18 @@ class BulleSocket(threading.Thread):
         self.numéro_souris = (int())
         self.numéro_rond = (int())
         self.port_liste = (list(((int(3724)), (int(443)), (int(44440)), (int(44444)), (int(5555)), (int(6112)))))
-        self.bulle.bind(('localhost', (int(port))))
+        try:
+            self.bulle.bind(('localhost', (int(port))))
+        except ssl.socket_error as ex:
+            raise
 
     def connecte(self, ip, clé, port):
         CCC = (struct.pack('>2B', (int(44)), (int(1))))
         self.bulle.connect((ip, port))
         paquet = (CCC + clé)
         self.envoyer(self, paquet)
+        self.analyseur.start()
+        self.survivre.start()
 
     def préfixe(self):
         loc_5 = (int(self.CMDTEC % 9000 + 1000))
@@ -234,6 +252,7 @@ class BulleSocket(threading.Thread):
         CCC = ((struct.pack('>H', ((len((struct.pack('>2B', (int(26)), (int(2)))))) + 2))) + (struct.pack('>2B', (int(26)), (int(2)))))
         paquet = (CCC)
         self.envoyer(self, paquet, (bool(1)))
+        time.sleep(15)
 
     def envoyer_msg(self, msg):
         CCC = (struct.pack('>2B', (int(6)), (int(6))))
@@ -268,12 +287,11 @@ class BulleSocket(threading.Thread):
     def recevoir(self):
         pass
 
+class RecevoirThread(threading.Thread):
+    def __init__(self):
+        threading.Thread.__init__(self, target = (self.recevoir), args = (self))
+                    
 class DummyThread(threading.Thread):
     def __init__(self):
         threading.Thread.__init__(self, target = (self.dummy), args = (self))
-        
-    def run(self):
-        while self.éxecuté == (bool(1)):
-            time.sleep(15)
-            self.dummy(self) 
-            
+                                        
