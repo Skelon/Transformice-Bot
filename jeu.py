@@ -181,7 +181,7 @@ class PrincipalSocket(threading.Thread):
 
     def deconnecte(self, cible):
        print("Deconnexion...")
-       self.analysuer = None
+       self.analyseur = None
        self.survivre = None
        self.principal.close()
        try:
