@@ -212,15 +212,28 @@ class BulleSocket(threading.Thread):
         self.numéro_carte = (int())
         self.numéro_souris = (int())
         self.numéro_rond = (int())
-        self.port_liste = (list(((int(3724)), (int(443)), (int(44440)), (int(44444)), (int(5555)), (int(6112)))))
+        
         try:
             self.bulle.bind(('localhost', (int(port))))
         except ssl.socket_error as ex:
             raise
 
     def connecte(self, ip, clé, port):
+        try:
+            self.bulle.close()
+        except ssl.socket_error as ex:
+            pass
+        
         CCC = (struct.pack('>2B', (int(44)), (int(1))))
-        self.bulle.connect((ip, port))
+        try:
+            with ((list((int(3724)), (int(443)), (int(44440)), (int(44444)), (int(5555)), (int(6112))))) as port_lise:
+                if port in port_liste:
+                    self.bulle.connect((ip, port))
+                else:
+                    raise ValueError("Révu: 3724, 443, 44440, 44444, 5555, 6112. Reçu: {}".format(port))
+        except ssl.socket_error as ex:
+            raise
+        
         paquet = (CCC + clé)
         self.envoyer(self, paquet)
         self.analyseur.start()
